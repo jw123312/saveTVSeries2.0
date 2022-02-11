@@ -7,13 +7,21 @@ import sqlite3
 import os
 import webbrowser
 
+from pandas import Series
+
 class AppDemo(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi("saveTvSeriesGui.ui", self)
 
         self.startDB()
-        self.populateList()
+        self.populateList(self.populateDict())
+
+        #set to first item
+        self.listWidget.setCurrentRow(0)
+
+        #display in view
+        self.viewFunction()
 
         self.viewButton.clicked.connect(self.viewFunction)
         self.deleteButton.clicked.connect(self.deleteFunction)
@@ -44,31 +52,33 @@ class AppDemo(QWidget):
         print(self.titleTextEdit.toPlainText())
 
     def searchFunction(self):
-        pass
+        textToFind = self.titleTextEdit.toPlainText()
+
+        cur.execute("select * from tvseriesapp where title like ? order by rank, title", ("%"+textToFind+"%",))
+        series = cur.fetchall()
+
+        self.populateList(series)
+
 
     def googleFunction(self):
         pass
 
-    def populateList(self):
+    def populateList(self, series):
         global tvList
         global menu
 
         menu = list()
         tvList = {}
 
-        series = self.populateDict()
+        self.listWidget.clear()
         
         #populate dictionary and populate list
         for item in series:
             tvList[item[0]] = {"LAST":item[1], "RANK":item[2], "DATE":item[3]}
             menu.append(item[0])
             self.listWidget.addItem(item[0])
-
-        #set to first item
-        self.listWidget.setCurrentRow(0)
         
-        #display in view
-        self.viewFunction()
+        
 
 
     def populateDict(self):
