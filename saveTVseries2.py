@@ -94,9 +94,13 @@ class AppDemo(QWidget):
 
         self.populateList(series)
 
-
     def googleFunction(self):
-        pass
+        link = "https://www.google.com/search?q="
+
+        currentItem = menu[self.listWidget.currentRow()]
+
+        link = link + currentItem + " tv series"
+        webbrowser.open(link)
 
     def populateList(self, series):
         global tvList
@@ -113,16 +117,12 @@ class AppDemo(QWidget):
             menu.append(item[0])
             self.listWidget.addItem(item[0])
             self.display()
-        
-        
-
 
     def populateDict(self):
         #get items from dictionary
         cur.execute("select * from tvseriesapp order by rank, title")
         series = cur.fetchall()
         return series
-
 
     def startDB(self):
         global conn, cur
