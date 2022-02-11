@@ -26,6 +26,10 @@ class AppDemo(QWidget):
         self.addButton.clicked.connect(self.addFunction)
         self.searchButton.clicked.connect(self.searchFunction)
         self.googleButton.clicked.connect(self.googleFunction)
+        self.listWidget.clicked.connect(self.on_change)
+
+    def on_change(self):
+        self.viewFunction()
 
     def display(self):
         #set to first item
