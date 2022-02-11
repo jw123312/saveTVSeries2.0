@@ -17,11 +17,7 @@ class AppDemo(QWidget):
         self.startDB()
         self.populateList(self.populateDict())
 
-        #set to first item
-        self.listWidget.setCurrentRow(0)
-
-        #display in view
-        self.viewFunction()
+        self.display()
 
         self.viewButton.clicked.connect(self.viewFunction)
         self.deleteButton.clicked.connect(self.deleteFunction)
@@ -30,6 +26,13 @@ class AppDemo(QWidget):
         self.addButton.clicked.connect(self.addFunction)
         self.searchButton.clicked.connect(self.searchFunction)
         self.googleButton.clicked.connect(self.googleFunction)
+
+    def display(self):
+        #set to first item
+        self.listWidget.setCurrentRow(0)
+
+        #display in view
+        self.viewFunction()
 
     def viewFunction(self):
         currentItem = menu[self.listWidget.currentRow()]
@@ -56,7 +59,18 @@ class AppDemo(QWidget):
             self.populateList(self.populateDict())
 
     def updateFuntcion(self):
-        pass
+        rank = self.rankTextEdit.toPlainText()
+        lastWatch = self.lastWatchedTextEdit.toPlainText()
+        title = self.titleTextEdit.toPlainText()
+
+        if title != "" and title in menu:
+            ret = QMessageBox.question(self, 'MessageBox', 'Update ' + title, QMessageBox.Yes , QMessageBox.Cancel)
+
+            if ret == QMessageBox.Yes:
+                cur.execute("update tvseriesapp set lastwatch=?,rank=?,lastupdate=? where title = ?",(lastWatch, rank, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), title))
+                conn.commit()
+                self.display()
+
 
     def addFunction(self):
         rank = self.rankTextEdit.toPlainText()
@@ -98,8 +112,7 @@ class AppDemo(QWidget):
             tvList[item[0]] = {"LAST":item[1], "RANK":item[2], "DATE":item[3]}
             menu.append(item[0])
             self.listWidget.addItem(item[0])
-            self.listWidget.setCurrentRow(0)
-            self.viewFunction()
+            self.display()
         
         
 
