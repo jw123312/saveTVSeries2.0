@@ -1,6 +1,6 @@
 import sys
 from tkinter import Menu
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from PyQt5 import uic
 from datetime import datetime
 import sqlite3
@@ -35,21 +35,42 @@ class AppDemo(QWidget):
         currentItem = menu[self.listWidget.currentRow()]
         currentSeries = tvList[currentItem]
         print(currentItem, currentSeries)
+
         self.rankTextEdit.setPlainText(currentSeries["RANK"])
         self.lastWatchedTextEdit.setPlainText(currentSeries["LAST"])
         self.titleTextEdit.setPlainText(currentItem)
         self.timeLabel.setText(currentSeries["DATE"])
 
-    def deleteFunction(self):
+    # get ratingLabel and lastestLabel info
+    def getInfo(self):
         pass
+
+    def deleteFunction(self):
+        currentItem = menu[self.listWidget.currentRow()]
+
+        ret = QMessageBox.question(self, 'MessageBox', 'Confirm delete ' + currentItem, QMessageBox.Yes , QMessageBox.Cancel)
+
+        if ret == QMessageBox.Yes:
+            cur.execute("delete from tvseriesapp where title = ?",(currentItem,))
+            conn.commit()
+            self.populateList(self.populateDict())
 
     def updateFuntcion(self):
         pass
 
     def addFunction(self):
-        print(self.rankTextEdit.toPlainText())
-        print(self.lastWatchedTextEdit.toPlainText())
-        print(self.titleTextEdit.toPlainText())
+        rank = self.rankTextEdit.toPlainText()
+        lastWatch = self.lastWatchedTextEdit.toPlainText()
+        title = self.titleTextEdit.toPlainText()
+
+        if rank =="\n" or rank == "" or lastWatch == "\n" or lastWatch == "" or title == "\n" or title == "":
+            QMessageBox.about(self, "Required", "Title, last watched and ranking required!")
+        elif title in menu:
+            QMessageBox.about(self, "Error", "Title exist!")
+        else:
+            cur.execute("INSERT INTO tvseriesapp(title,lastwatch,rank,lastupdate) VALUES(?,?,?,?)", (title, lastWatch, rank, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            conn.commit()
+            self.populateList(self.populateDict())
 
     def searchFunction(self):
         textToFind = self.titleTextEdit.toPlainText()
@@ -77,6 +98,8 @@ class AppDemo(QWidget):
             tvList[item[0]] = {"LAST":item[1], "RANK":item[2], "DATE":item[3]}
             menu.append(item[0])
             self.listWidget.addItem(item[0])
+            self.listWidget.setCurrentRow(0)
+            self.viewFunction()
         
         
 
