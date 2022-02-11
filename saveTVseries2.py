@@ -25,7 +25,12 @@ class AppDemo(QWidget):
 
     def viewFunction(self):
         currentItem = menu[self.listWidget.currentRow()]
-        print(currentItem, tvList[currentItem])
+        currentSeries = tvList[currentItem]
+        print(currentItem, currentSeries)
+        self.rankTextEdit.setPlainText(currentSeries["RANK"])
+        self.lastWatchedTextEdit.setPlainText(currentSeries["LAST"])
+        self.titleTextEdit.setPlainText(currentItem)
+        self.timeLabel.setText(currentSeries["DATE"])
 
     def deleteFunction(self):
         pass
@@ -76,7 +81,7 @@ class AppDemo(QWidget):
     def startDB(self):
         global conn, cur
 
-        dblocation = r"D:\python\saveTVSeries 2.0\tvseriesapp.db"
+        dblocation = r"D:\python\saveTVSeries2.0\tvseriesapp.db"
 
         conn = sqlite3.connect(dblocation)
         cur = conn.cursor()
