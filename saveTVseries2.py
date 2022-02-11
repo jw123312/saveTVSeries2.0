@@ -50,6 +50,8 @@ class AppDemo(QWidget):
 
     # get ratingLabel and lastestLabel info
     def getInfo(self):
+        #TODO
+        # get season and average rating from the google page
         pass
 
     def deleteFunction(self):
